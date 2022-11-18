@@ -1,5 +1,5 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue'
 import Chirp from '@/Components/Chirp.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -16,7 +16,7 @@ const form = useForm({
 <template>
     <Head title="Chirps" />
 
-    <AuthenticatedLayout>
+    <AppLayout>
         <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
             <form @submit.prevent="form.post(route('chirps.store'), { onSuccess: () => form.reset() })">
                 <textarea
@@ -36,5 +36,5 @@ const form = useForm({
                 />
             </div>
         </div>
-    </AuthenticatedLayout>
+    </AppLayout>
 </template>

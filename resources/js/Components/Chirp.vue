@@ -35,7 +35,7 @@ const editing = ref(false);
                         edited</small>
 
                 </div>
-                <Dropdown v-if="chirp.user.id === $page.props.auth.user.id">
+                <Dropdown v-if="chirp.user.id === $page.props.user.id">
                     <template #trigger>
                         <button>
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20"
