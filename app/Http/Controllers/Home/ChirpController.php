@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Home;
 
+use App\Http\Controllers\Controller;
 use App\Models\Chirp;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,7 +16,7 @@ class ChirpController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Chirps/Index', [
+        return Inertia::render('Home/Chirps/Index', [
             'chirps' => Chirp::with('user:id,name')->latest()->get(),
         ]);
     }
