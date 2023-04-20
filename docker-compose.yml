@@ -4,6 +4,7 @@ services:
 
     ### Workspace Utilities ##################################
     workspace:
+        platform: linux/x86_64
         image: registry.cn-hangzhou.aliyuncs.com/mn/laravel-workspace:dev-8.0.0
         volumes:
             - ./:/var/www
@@ -14,6 +15,7 @@ services:
 
     ### PHP-FPM ##############################################
     php-fpm:
+        platform: linux/x86_64
         image: registry.cn-hangzhou.aliyuncs.com/mn/mhd_glenmorangie_cask_mp_backend_php-fpm:0.0.1
         volumes:
             - ./docker/php-fpm/php8.0.ini:/usr/local/etc/php/php.ini
@@ -27,6 +29,7 @@ services:
 
     ### PHP Worker ############################################
     php-worker:
+        platform: linux/x86_64
         image: registry.cn-hangzhou.aliyuncs.com/mn/laravel-php_worker:dev-8.0.0
         volumes:
             - ./:/var/www:cached
@@ -84,6 +87,27 @@ services:
             - ./docker/docker-runtime/redis:/data
         ports:
             - "6379:6379"
+        logging:
+            options:
+                max-file: "5"
+                max-size: "10m"
+    ### RabbitMQ #############################################
+    rabbitmq:
+        build:
+            context: ./docker/rabbitmq
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+            - "15671:15671"
+            - "15674:15674"
+        privileged: true
+        hostname: laradock-rabbitmq
+        volumes:
+            - ./docker/docker-runtime/rabbitmq:/var/lib/rabbitmq
+            - ./docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+            - ./docker/rabbitmq/management_agent.disable_metrics_collector.conf:/etc/rabbitmq/conf.d/management_agent.disable_metrics_collector.conf
+        depends_on:
+            - php-fpm
         logging:
             options:
                 max-file: "5"

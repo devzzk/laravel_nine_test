@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ChirpController;
+use App\Http\Controllers\Home\ChirpController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
