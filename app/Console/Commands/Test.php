@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Admin;
 use Illuminate\Console\Command;
-use Stripe\StripeClient;
 
 class Test extends Command
 {
@@ -28,12 +28,10 @@ class Test extends Command
      */
     public function handle()
     {
-        $stripe = new StripeClient('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
-
-        $result = $stripe->paymentIntents->create(
-            ['amount' => 500, 'currency' => 'cny', 'payment_method' => 'pm_card_cn']
-        )->toArray();
-        dd($result);
-
+//        $admin = Admin::create([
+//            'name' => 'admin',
+//            'email' => 'admin@gmail.com',
+//            'password' => '111111',
+//        ]);
     }
 }

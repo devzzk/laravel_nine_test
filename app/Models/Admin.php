@@ -21,6 +21,13 @@ class Admin extends User
     ];
 
     /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guard = 'admin';
+
+    /**
      * The attributes that should be cast.
      *
      * @var array
