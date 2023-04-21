@@ -12,7 +12,8 @@ services:
                 - INSTALL_XDEBUG=false
                 - INSTALL_PHPDBG=true
                 - INSTALL_PHPREDIS=true
-#                - NPM_REGISTRY=https://registry.npm.taobao.org
+                - INSTALL_NODE=true
+                - NPM_REGISTRY=https://registry.npm.taobao.org
                 - COMPOSER_GLOBAL_INSTALL=true
                 - COMPOSER_REPO_PACKAGIST=https://mirrors.aliyun.com/composer
                 - GITHUB_OAUTH_TOKEN=e27ef76cf0478eb07c3c7124d67e9314234895c4
