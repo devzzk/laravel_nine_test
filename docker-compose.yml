@@ -5,7 +5,24 @@ services:
     ### Workspace Utilities ##################################
     workspace:
         platform: linux/x86_64
-        image: registry.cn-hangzhou.aliyuncs.com/mn/laravel-workspace:dev-8.0.0
+        build:
+            context: ./docker/workspace
+            args:
+                - LARADOCK_PHP_VERSION=8.0
+                - INSTALL_XDEBUG=false
+                - INSTALL_PHPDBG=true
+                - INSTALL_PHPREDIS=true
+#                - NPM_REGISTRY=https://registry.npm.taobao.org
+                - COMPOSER_GLOBAL_INSTALL=true
+                - COMPOSER_REPO_PACKAGIST=https://mirrors.aliyun.com/composer
+                - GITHUB_OAUTH_TOKEN=e27ef76cf0478eb07c3c7124d67e9314234895c4
+                - INSTALL_IMAGEMAGICK=false
+                - INSTALL_DUSK_DEPS=false
+                - INSTALL_SWOOLE=false
+                - CHROME_DRIVER_VERSION=74.0.3729.6
+                - NODE_VERSION=10.16.0
+                - YARN_VERSION=latest
+                - TZ=Asia/Shanghai
         volumes:
             - ./:/var/www
         logging:
@@ -16,12 +33,21 @@ services:
     ### PHP-FPM ##############################################
     php-fpm:
         platform: linux/x86_64
-        image: registry.cn-hangzhou.aliyuncs.com/mn/mhd_glenmorangie_cask_mp_backend_php-fpm:0.0.1
+        build:
+            context: ./docker/php-fpm
+            args:
+                - LARADOCK_PHP_VERSION=8.0
+                - INSTALL_PHPREDIS=true
+                - INSTALL_OPCACHE=true
+                - INSTALL_MYSQLI=true
+                - INSTALL_SWOOLE=false
+                - INSTALL_IMAGEMAGICK=false
+                - INSTALL_ADDITIONAL_LOCALES=false
         volumes:
             - ./docker/php-fpm/php8.0.ini:/usr/local/etc/php/php.ini
             - ./:/var/www:cached
         expose:
-            -  9000
+            - 9000
         logging:
             options:
                 max-file: "5"
@@ -30,7 +56,10 @@ services:
     ### PHP Worker ############################################
     php-worker:
         platform: linux/x86_64
-        image: registry.cn-hangzhou.aliyuncs.com/mn/laravel-php_worker:dev-8.0.0
+        build:
+            context: ./docker/php-worker
+            args:
+                - LARADOCK_PHP_VERSION=8.0
         volumes:
             - ./:/var/www:cached
             - ./docker/php-worker/supervisord.d:/etc/supervisord.d
@@ -91,6 +120,7 @@ services:
             options:
                 max-file: "5"
                 max-size: "10m"
+
     ### RabbitMQ #############################################
     rabbitmq:
         build:
