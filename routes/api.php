@@ -18,10 +18,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('students', function () {
-    return response()->json([
-        ['id' => 1,'name' => 'donny', 'age' => 18],
-        ['id' => 2,'name' => 'donny1', 'age' => 19],
-        ['id' => 3,'name' => 'donny2', 'age' => 20],
-    ]);
-});
+Route::get('v1/students', 'ChirpController@index');

@@ -18,3 +18,5 @@ yarn-error.log
 /.vscode
 /docker/docker-runtime/
 /public/vendor/
+rr
+.rr.yaml

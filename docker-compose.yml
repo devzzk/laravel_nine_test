@@ -19,7 +19,7 @@ services:
                 - GITHUB_OAUTH_TOKEN=e27ef76cf0478eb07c3c7124d67e9314234895c4
                 - INSTALL_IMAGEMAGICK=false
                 - INSTALL_DUSK_DEPS=false
-                - INSTALL_SWOOLE=false
+                - INSTALL_SWOOLE=true
                 - CHROME_DRIVER_VERSION=74.0.3729.6
                 - NODE_VERSION=10.16.0
                 - YARN_VERSION=latest
@@ -39,9 +39,10 @@ services:
             args:
                 - LARADOCK_PHP_VERSION=8.0
                 - INSTALL_PHPREDIS=true
+                - INSTALL_XDEBUG=true
                 - INSTALL_OPCACHE=true
                 - INSTALL_MYSQLI=true
-                - INSTALL_SWOOLE=false
+                - INSTALL_SWOOLE=true
                 - INSTALL_IMAGEMAGICK=false
                 - INSTALL_ADDITIONAL_LOCALES=false
         volumes:
@@ -60,10 +61,15 @@ services:
         build:
             context: ./docker/php-worker
             args:
+                - INSTALL_SWOOLE=true
                 - LARADOCK_PHP_VERSION=8.0
         volumes:
             - ./:/var/www:cached
             - ./docker/php-worker/supervisord.d:/etc/supervisord.d
+        ports:
+            - "8000:80"
+        expose:
+            - "80"
         depends_on:
             - php-fpm
         links:
@@ -85,9 +91,9 @@ services:
             - ./docker/docker-runtime/nginx/log:/var/log/nginx
             - ./docker/nginx/local/sites:/etc/nginx/sites-available
         ports:
-            - "8000:80"
+            - "8001:80"
         expose:
-            - "8000"
+            - "8001"
         depends_on:
             - php-fpm
         links:
@@ -109,6 +115,25 @@ services:
             - ./docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
         ports:
             - "33060:3306"
+#    ### PostgreSQL ###########################################
+#    postgres:
+#        build:
+#            context: ./docker/postgres
+#            args:
+#                - POSTGRES_VERSION=14.3
+#        volumes:
+#            - ./docker/docker-runtime/postgres:/var/lib/postgresql/data
+#            - ./docker/postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+#        ports:
+#            - "54320:5432"
+#        environment:
+#            - POSTGRES_DB=laravel
+#            - POSTGRES_USER=root
+#            - POSTGRES_PASSWORD=123456
+#        logging:
+#            options:
+#                max-file: "5"
+#                max-size: "10m"
 
     ### Redis ################################################
     redis:
