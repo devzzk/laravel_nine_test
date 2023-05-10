@@ -22,6 +22,5 @@ class AuthController extends Controller
     public function store(LoginRequest $request)
     {
         $request->authenticate();
-        dd($request->session());
     }
 }
