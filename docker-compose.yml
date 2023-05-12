@@ -19,7 +19,7 @@ services:
                 - GITHUB_OAUTH_TOKEN=e27ef76cf0478eb07c3c7124d67e9314234895c4
                 - INSTALL_IMAGEMAGICK=false
                 - INSTALL_DUSK_DEPS=false
-                - INSTALL_SWOOLE=false
+                - INSTALL_SWOOLE=true
                 - CHROME_DRIVER_VERSION=74.0.3729.6
                 - NODE_VERSION=10.16.0
                 - YARN_VERSION=latest
@@ -41,12 +41,14 @@ services:
                 - INSTALL_PHPREDIS=true
                 - INSTALL_OPCACHE=true
                 - INSTALL_MYSQLI=true
-                - INSTALL_SWOOLE=false
+                - INSTALL_SWOOLE=true
                 - INSTALL_IMAGEMAGICK=false
                 - INSTALL_ADDITIONAL_LOCALES=false
         volumes:
             - ./docker/php-fpm/php8.0.ini:/usr/local/etc/php/php.ini
             - ./:/var/www:cached
+        depends_on:
+            - mysql
         expose:
             - 9000
         logging:
@@ -61,6 +63,7 @@ services:
             context: ./docker/php-worker
             args:
                 - LARADOCK_PHP_VERSION=8.0
+                - INSTALL_REDIS=true
         volumes:
             - ./:/var/www:cached
             - ./docker/php-worker/supervisord.d:/etc/supervisord.d
@@ -122,24 +125,24 @@ services:
                 max-file: "5"
                 max-size: "10m"
 
-    ### RabbitMQ #############################################
-    rabbitmq:
-        build:
-            context: ./docker/rabbitmq
-        ports:
-            - "5672:5672"
-            - "15672:15672"
-            - "15671:15671"
-            - "15674:15674"
-        privileged: true
-        hostname: laradock-rabbitmq
-        volumes:
-            - ./docker/docker-runtime/rabbitmq:/var/lib/rabbitmq
-            - ./docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-            - ./docker/rabbitmq/management_agent.disable_metrics_collector.conf:/etc/rabbitmq/conf.d/management_agent.disable_metrics_collector.conf
-        depends_on:
-            - php-fpm
-        logging:
-            options:
-                max-file: "5"
-                max-size: "10m"
+#    ### RabbitMQ #############################################
+#    rabbitmq:
+#        build:
+#            context: ./docker/rabbitmq
+#        ports:
+#            - "5672:5672"
+#            - "15672:15672"
+#            - "15671:15671"
+#            - "15674:15674"
+#        privileged: true
+#        hostname: laradock-rabbitmq
+#        volumes:
+#            - ./docker/docker-runtime/rabbitmq:/var/lib/rabbitmq
+#            - ./docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+#            - ./docker/rabbitmq/management_agent.disable_metrics_collector.conf:/etc/rabbitmq/conf.d/management_agent.disable_metrics_collector.conf
+#        depends_on:
+#            - php-fpm
+#        logging:
+#            options:
+#                max-file: "5"
+#                max-size: "10m"
