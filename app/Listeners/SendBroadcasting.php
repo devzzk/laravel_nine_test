@@ -2,14 +2,13 @@
 
 namespace App\Listeners;
 
-use App\Events\ChirpCreated;
-use App\Models\User;
-use App\Notifications\NewChirp;
+use App\Facades\Pusher;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class SendChirpCreatedNotifications implements ShouldQueue
+class SendBroadcasting implements ShouldQueue
 {
+    use InteractsWithQueue;
     /**
      * Create the event listener.
      *
@@ -23,11 +22,12 @@ class SendChirpCreatedNotifications implements ShouldQueue
     /**
      * Handle the event.
      *
-     * @param  \App\Events\ChirpCreated  $event
+     * @param  object  $event
      * @return void
      */
-    public function handle(ChirpCreated $event)
+    public function handle($event)
     {
-
+        logger()->info('send success');
+        Pusher::trigger($event->broadcastOn(), $event->broadcastAs(), $event->getData());
     }
 }

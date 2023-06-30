@@ -4,11 +4,11 @@ services:
 
     ### Workspace Utilities ##################################
     workspace:
-        platform: linux/x86_64
+        #        image: think-workspace:latest
         build:
             context: ./docker/workspace
             args:
-                - LARADOCK_PHP_VERSION=8.0
+                - LARADOCK_PHP_VERSION=8.2
                 - INSTALL_XDEBUG=false
                 - INSTALL_PHPDBG=true
                 - INSTALL_PHPREDIS=true
@@ -33,11 +33,11 @@ services:
 
     ### PHP-FPM ##############################################
     php-fpm:
-        platform: linux/x86_64
+        #        image: think-php-fpm:latest
         build:
             context: ./docker/php-fpm
             args:
-                - LARADOCK_PHP_VERSION=8.0
+                - LARADOCK_PHP_VERSION=8.2
                 - INSTALL_PHPREDIS=true
                 - INSTALL_OPCACHE=true
                 - INSTALL_MYSQLI=true
@@ -49,6 +49,7 @@ services:
             - ./:/var/www:cached
         depends_on:
             - mysql
+            - redis
         expose:
             - 9000
         logging:
@@ -58,12 +59,13 @@ services:
 
     ### PHP Worker ############################################
     php-worker:
-        platform: linux/x86_64
+        #        image: think-php-worker:latest
         build:
             context: ./docker/php-worker
             args:
-                - LARADOCK_PHP_VERSION=8.0
+                - LARADOCK_PHP_VERSION=8.2
                 - INSTALL_REDIS=true
+                - INSTALL_SWOOLE=true
         volumes:
             - ./:/var/www:cached
             - ./docker/php-worker/supervisord.d:/etc/supervisord.d
@@ -125,24 +127,58 @@ services:
                 max-file: "5"
                 max-size: "10m"
 
-#    ### RabbitMQ #############################################
-#    rabbitmq:
-#        build:
-#            context: ./docker/rabbitmq
-#        ports:
-#            - "5672:5672"
-#            - "15672:15672"
-#            - "15671:15671"
-#            - "15674:15674"
-#        privileged: true
-#        hostname: laradock-rabbitmq
-#        volumes:
-#            - ./docker/docker-runtime/rabbitmq:/var/lib/rabbitmq
-#            - ./docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-#            - ./docker/rabbitmq/management_agent.disable_metrics_collector.conf:/etc/rabbitmq/conf.d/management_agent.disable_metrics_collector.conf
-#        depends_on:
-#            - php-fpm
-#        logging:
-#            options:
-#                max-file: "5"
-#                max-size: "10m"
+    ### RabbitMQ #############################################
+    rabbitmq:
+        build:
+            context: ./docker/rabbitmq
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+            - "15671:15671"
+            - "15674:15674"
+        privileged: true
+        hostname: laradock-rabbitmq
+        volumes:
+            - ./docker/docker-runtime/rabbitmq:/var/lib/rabbitmq
+            - ./docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+            - ./docker/rabbitmq/management_agent.disable_metrics_collector.conf:/etc/rabbitmq/conf.d/management_agent.disable_metrics_collector.conf
+        depends_on:
+            - php-fpm
+        logging:
+            options:
+                max-file: "5"
+                max-size: "10m"
+
+    ### ElasticSearch ########################################
+    elasticsearch:
+        build:
+            context: ./docker/elasticsearch
+            args:
+                - ELK_VERSION=8.8.0
+        volumes:
+            - ./docker/docker-runtime/elasticsearch:/usr/share/elasticsearch/data
+        environment:
+            - cluster.name=laradock-cluster
+            - node.name=laradock-node
+            - bootstrap.memory_lock=true
+            - xpack.security.enabled=false
+            - xpack.security.transport.ssl.enabled=false
+            - indices.id_field_data.enabled=true
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+            - cluster.initial_master_nodes=laradock-node
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+            nofile:
+                soft: 65536
+                hard: 65536
+        ports:
+            - "9200:9200"
+            - "9300:9300"
+        depends_on:
+            - php-fpm
+        logging:
+            options:
+                max-file: "5"
+                max-size: "10m"

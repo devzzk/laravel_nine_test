@@ -2,9 +2,10 @@
 
 namespace App\Providers;
 
-use Encore\Admin\Config\Config;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Pusher\Pusher;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,7 +16,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton('pusher', function (Application $app) {
+            $config = $app->make('config')['broadcasting.connections.pusher'];
+            return new Pusher(
+                $config['key'],
+                $config['secret'],
+                $config['app_id'],
+                [
+                    'cluster' => $config['cluster'],
+                    'useTls' => $config['options']['useTLS'],
+                ],
+            );
+        });
     }
 
     /**

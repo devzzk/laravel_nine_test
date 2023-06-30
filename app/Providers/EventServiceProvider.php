@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Events\ChirpCreated;
+use App\Listeners\SendBroadcasting;
 use App\Listeners\SendChirpCreatedNotifications;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -18,7 +19,8 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         ChirpCreated::class => [
-            SendChirpCreatedNotifications::class,
+            SendBroadcasting::class,
+//            SendChirpCreatedNotifications::class,
         ],
 
         Registered::class => [

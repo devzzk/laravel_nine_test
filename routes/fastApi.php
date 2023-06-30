@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\Api\V1\ElasticSearchController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,8 +18,10 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'v1'], function () {
    Route::get('products', function () {
        return response()->json([
-           'result' => 'success',
-           'code' => 200,
+           'result' => 'failed',
+           'code' => 422,
        ]);
    });
+
+   Route::get('elasticsearch',[ElasticSearchController::class, 'search']);
 });
