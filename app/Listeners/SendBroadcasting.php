@@ -27,7 +27,6 @@ class SendBroadcasting implements ShouldQueue
      */
     public function handle($event)
     {
-        logger()->info('send success');
         Pusher::trigger($event->broadcastOn(), $event->broadcastAs(), $event->getData());
     }
 }
