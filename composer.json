@@ -19,7 +19,6 @@
         "laravel/passport": "^11.3",
         "laravel/sanctum": "^2.8",
         "laravel/tinker": "^2.7",
-        "mobilenowgroup/subscribe-message": "^2.0",
         "pusher/pusher-php-server": "^7.2",
         "tightenco/ziggy": "^1.0",
         "vladimir-yuldashev/laravel-queue-rabbitmq": "^13.2"
