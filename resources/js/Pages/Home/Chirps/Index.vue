@@ -4,13 +4,23 @@ import Chirp from '@/Components/Chirp.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { useForm, Head } from '@inertiajs/inertia-vue3';
+import {ref, watch} from "vue";
 
-defineProps(['chirps']);
+const props = defineProps(['chirps']);
 
 const form = useForm({
     message: '',
 });
 
+const message = ref(props.chirps);
+
+watch(() => props.chirps, (newVal) => {
+    message.value = newVal;
+});
+
+Echo.channel('chirps').listen('.message.received', (e) => {
+    props.chirps.unshift(e)
+})
 </script>
 
 <template>
@@ -30,7 +40,7 @@ const form = useForm({
 
             <div class="mt-6 bg-white shadow-sm rounded-lg divide-y">
                 <Chirp
-                    v-for="chirp in chirps"
+                    v-for="chirp in message"
                     :key="chirp.id"
                     :chirp="chirp"
                 />

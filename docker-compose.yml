@@ -4,26 +4,26 @@ services:
 
     ### Workspace Utilities ##################################
     workspace:
-        platform: linux/x86_64
-        build:
-            context: ./docker/workspace
-            args:
-                - LARADOCK_PHP_VERSION=8.0
-                - INSTALL_XDEBUG=false
-                - INSTALL_PHPDBG=true
-                - INSTALL_PHPREDIS=true
-                - INSTALL_NODE=true
-                - NPM_REGISTRY=https://registry.npm.taobao.org
-                - COMPOSER_GLOBAL_INSTALL=true
-                - COMPOSER_REPO_PACKAGIST=https://mirrors.aliyun.com/composer
-                - GITHUB_OAUTH_TOKEN=e27ef76cf0478eb07c3c7124d67e9314234895c4
-                - INSTALL_IMAGEMAGICK=false
-                - INSTALL_DUSK_DEPS=false
-                - INSTALL_SWOOLE=false
-                - CHROME_DRIVER_VERSION=74.0.3729.6
-                - NODE_VERSION=10.16.0
-                - YARN_VERSION=latest
-                - TZ=Asia/Shanghai
+        image: registry.cn-hangzhou.aliyuncs.com/donny-zzk/laravel-workspace:v8.1
+#        build:
+#            context: ./docker/workspace
+#            args:
+#                - LARADOCK_PHP_VERSION=8.2
+#                - INSTALL_XDEBUG=false
+#                - INSTALL_PHPDBG=true
+#                - INSTALL_PHPREDIS=true
+#                - INSTALL_NODE=true
+#                - NPM_REGISTRY=https://registry.npm.taobao.org
+#                - COMPOSER_GLOBAL_INSTALL=true
+#                - COMPOSER_REPO_PACKAGIST=https://mirrors.aliyun.com/composer
+#                - GITHUB_OAUTH_TOKEN=e27ef76cf0478eb07c3c7124d67e9314234895c4
+#                - INSTALL_IMAGEMAGICK=false
+#                - INSTALL_DUSK_DEPS=false
+#                - INSTALL_SWOOLE=true
+#                - CHROME_DRIVER_VERSION=74.0.3729.6
+#                - NODE_VERSION=10.16.0
+#                - YARN_VERSION=latest
+#                - TZ=Asia/Shanghai
         volumes:
             - ./:/var/www
         logging:
@@ -33,20 +33,23 @@ services:
 
     ### PHP-FPM ##############################################
     php-fpm:
-        platform: linux/x86_64
-        build:
-            context: ./docker/php-fpm
-            args:
-                - LARADOCK_PHP_VERSION=8.0
-                - INSTALL_PHPREDIS=true
-                - INSTALL_OPCACHE=true
-                - INSTALL_MYSQLI=true
-                - INSTALL_SWOOLE=false
-                - INSTALL_IMAGEMAGICK=false
-                - INSTALL_ADDITIONAL_LOCALES=false
+        image: registry.cn-hangzhou.aliyuncs.com/donny-zzk/laravel-php-fpm:v8.1
+#        build:
+#            context: ./docker/php-fpm
+#            args:
+#                - LARADOCK_PHP_VERSION=8.2
+#                - INSTALL_PHPREDIS=true
+#                - INSTALL_OPCACHE=true
+#                - INSTALL_MYSQLI=true
+#                - INSTALL_SWOOLE=true
+#                - INSTALL_IMAGEMAGICK=false
+#                - INSTALL_ADDITIONAL_LOCALES=false
         volumes:
             - ./docker/php-fpm/php8.0.ini:/usr/local/etc/php/php.ini
             - ./:/var/www:cached
+        depends_on:
+            - mysql
+            - redis
         expose:
             - 9000
         logging:
@@ -56,11 +59,13 @@ services:
 
     ### PHP Worker ############################################
     php-worker:
-        platform: linux/x86_64
-        build:
-            context: ./docker/php-worker
-            args:
-                - LARADOCK_PHP_VERSION=8.0
+        image: registry.cn-hangzhou.aliyuncs.com/donny-zzk/laravel-php-worker:v8.1
+#        build:
+#            context: ./docker/php-worker
+#            args:
+#                - LARADOCK_PHP_VERSION=8.2
+#                - INSTALL_REDIS=true
+#                - INSTALL_SWOOLE=true
         volumes:
             - ./:/var/www:cached
             - ./docker/php-worker/supervisord.d:/etc/supervisord.d
@@ -137,6 +142,40 @@ services:
             - ./docker/docker-runtime/rabbitmq:/var/lib/rabbitmq
             - ./docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
             - ./docker/rabbitmq/management_agent.disable_metrics_collector.conf:/etc/rabbitmq/conf.d/management_agent.disable_metrics_collector.conf
+        depends_on:
+            - php-fpm
+        logging:
+            options:
+                max-file: "5"
+                max-size: "10m"
+
+    ### ElasticSearch ########################################
+    elasticsearch:
+        build:
+            context: ./docker/elasticsearch
+            args:
+                - ELK_VERSION=8.8.0
+        volumes:
+            - ./docker/docker-runtime/elasticsearch:/usr/share/elasticsearch/data
+        environment:
+            - cluster.name=laradock-cluster
+            - node.name=laradock-node
+            - bootstrap.memory_lock=true
+            - xpack.security.enabled=false
+            - xpack.security.transport.ssl.enabled=false
+            - indices.id_field_data.enabled=true
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+            - cluster.initial_master_nodes=laradock-node
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+            nofile:
+                soft: 65536
+                hard: 65536
+        ports:
+            - "9200:9200"
+            - "9300:9300"
         depends_on:
             - php-fpm
         logging:

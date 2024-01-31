@@ -20,8 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('students', function () {
     return response()->json([
-        ['id' => 1,'name' => 'donny', 'age' => 18],
-        ['id' => 2,'name' => 'donny1', 'age' => 19],
-        ['id' => 3,'name' => 'donny2', 'age' => 20],
+        'result' => 'success',
+        'code' => 200,
     ]);
 });

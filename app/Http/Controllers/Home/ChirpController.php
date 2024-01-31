@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Home;
 
+use App\Events\ChirpCreated;
+use App\Facades\Pusher;
 use App\Http\Controllers\Controller;
 use App\Models\Chirp;
 use Illuminate\Http\Request;
@@ -28,14 +30,12 @@ class ChirpController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @param Request $request
      */
     public function store(Request $request)
     {
@@ -51,30 +51,24 @@ class ChirpController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \App\Models\Chirp $chirp
      * @return \Illuminate\Http\Response
      */
     public function show(Chirp $chirp)
     {
-        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\Chirp $chirp
      * @return \Illuminate\Http\Response
      */
     public function edit(Chirp $chirp)
     {
-        //
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Chirp $chirp
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function update(Request $request, Chirp $chirp)
@@ -93,8 +87,8 @@ class ChirpController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Models\Chirp $chirp
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function destroy(Chirp $chirp)

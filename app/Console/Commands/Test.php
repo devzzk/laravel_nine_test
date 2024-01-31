@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Events\ChirpCreated;
 use App\Models\Admin;
+use App\Models\Chirp;
 use Illuminate\Console\Command;
 
 class Test extends Command
@@ -28,10 +30,7 @@ class Test extends Command
      */
     public function handle()
     {
-//        $admin = Admin::create([
-//            'name' => 'admin',
-//            'email' => 'admin@gmail.com',
-//            'password' => '111111',
-//        ]);
+//        $chirp = Chirp::find(1);
+//        ChirpCreated::dispatch($chirp);
     }
 }

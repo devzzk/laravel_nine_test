@@ -1284,6 +1284,12 @@ RUN if [ ${INSTALL_DNSUTILS} = true ]; then \
 ;fi
 
 ###########################################################################
+# Fix pgrep: command not found issue
+###########################################################################
+RUN apt-get update -yqq && \
+    apt-get install -y procps
+
+###########################################################################
 # Check PHP version:
 ###########################################################################
 
@@ -1326,6 +1332,8 @@ ENV LC_ALL ${LOCALE}
 
 WORKDIR /var/www
 
-CMD ["php-fpm"]
+ADD ./startup.sh /opt/startup.sh
+RUN sed -i 's/\r//g' /opt/startup.sh
+CMD ["/bin/bash", "/opt/startup.sh"]
 
 EXPOSE 9000

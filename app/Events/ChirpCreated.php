@@ -13,16 +13,18 @@ use Illuminate\Queue\SerializesModels;
 
 class ChirpCreated
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+
+    public $chirp;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(public Chirp $chirp)
+    public function __construct(Chirp $chirp)
     {
-        //
+        $this->chirp = Chirp::with('user:id,name')->find($chirp->id)->toArray();
     }
 
     /**
@@ -32,6 +34,18 @@ class ChirpCreated
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        return [
+            'chirps'
+        ];
+    }
+
+    public function broadcastAs()
+    {
+        return 'message.received';
+    }
+
+    public function getData()
+    {
+        return $this->chirp;
     }
 }
