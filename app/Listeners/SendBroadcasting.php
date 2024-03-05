@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Events\ChirpCreated;
 use App\Facades\Pusher;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -9,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 class SendBroadcasting implements ShouldQueue
 {
     use InteractsWithQueue;
+
     /**
      * Create the event listener.
      *
@@ -25,7 +27,7 @@ class SendBroadcasting implements ShouldQueue
      * @param  object  $event
      * @return void
      */
-    public function handle($event)
+    public function handle(ChirpCreated $event)
     {
         Pusher::trigger($event->broadcastOn(), $event->broadcastAs(), $event->getData());
     }

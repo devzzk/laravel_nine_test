@@ -17,7 +17,9 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton('pusher', function (Application $app) {
+            config('broadcasting.connections.pusher.app_id');
             $config = $app->make('config')['broadcasting.connections.pusher'];
+
             return new Pusher(
                 $config['key'],
                 $config['secret'],

@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Events\ChirpCreated;
-use App\Models\Admin;
 use App\Models\Chirp;
 use Illuminate\Console\Command;
 
@@ -30,7 +29,7 @@ class Test extends Command
      */
     public function handle()
     {
-//        $chirp = Chirp::find(1);
-//        ChirpCreated::dispatch($chirp);
+        $chirp = Chirp::find(1);
+        ChirpCreated::dispatch($chirp);
     }
 }

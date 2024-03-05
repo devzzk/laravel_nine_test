@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Home\ChirpController;
+use App\Services\RabbitMQ\RabbitMQProducer;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -40,3 +41,14 @@ Route::resource('chirps', ChirpController::class)
     ->middleware(['auth', 'verified']);
 
 require __DIR__.'/auth.php';
+
+Route::get('producer', function () {
+    $producer = new RabbitMQProducer();
+    $message = sprintf('Hello, RabbitMQ! My name is %s, i want to try i can put how long string here: %s',
+        fake()->name,
+        fake()->sentences(100, true)
+    );
+    $producer->publish($message, 'default');
+
+    return $message;
+});

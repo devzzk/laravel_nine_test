@@ -1,8 +1,8 @@
-[program:laravel-worker]
+[program:laravel-worker-server]
 process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/artisan rabbitmq:consume
+command=php /var/www/artisan octane:start --host=0.0.0.0
 autostart=true
 autorestart=true
-numprocs=8
 user=laradock
 redirect_stderr=true
+stopwaitsecs=3600
